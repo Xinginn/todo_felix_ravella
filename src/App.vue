@@ -1,30 +1,74 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <h1>My TODO List</h1>
+
+  New task:
+  <form @submit.prevent="addTask">
+    <input type="text" v-model="newTaskData.label" placeholder="task name">
+    <select v-model="newTaskData.status">
+      <option v-for="item, index of statusOptions" :hidden="item == statusOptions[statusOptions.length-1]"
+        :key="index"
+        :value="item">
+        {{item}}
+      </option>
+    </select>
+    <button type="submit">+</button>
+  </form>
+
+  <Task v-for="item,index of taskList" 
+    :key="index" 
+    :taskIndex="index"
+    :initialData="item"
+    @taskChanged="onTaskChanged">
+  </Task>
 </template>
 
+<script>
+import Task from './components/Task.vue'
+
+export default {
+  name: 'App',
+  components: {
+    Task
+  },
+  data(){
+    return {
+      taskList: [
+        {
+          label: 'première task',
+          status: 'todo'
+        },
+        {
+          label: 'deuxieme task',
+          status: 'done'
+        }
+      ],
+      newTaskData: {
+        label: "",
+        status: "todo"
+      },
+      statusOptions: [
+        "todo",
+        "doing...",
+        "done!"
+      ],
+    }
+  },
+  methods:{
+    onTaskChanged(index, data){
+      this.taskList[index] = data
+    },
+    addTask(){
+      this.taskList.push({...this.newTaskData})
+      // flush new task values
+      this.newTaskData = {
+        label: "",
+        status: "todo"
+      }
+    }
+  }
+}
+</script>
+
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
 </style>
