@@ -1,9 +1,9 @@
 <template>
   <div class="task-wrapper">
-    <div>
+    <div :class="initialData.status === 'done!' ? 'done' : ''">
       #{{ taskIndex +1 }} | {{ initialData.label }}
     </div>
-    <div>
+    <div :class="initialData.status === 'done!' ? 'done' : ''">
       Status: {{ initialData.status }}
     </div>
    
@@ -59,5 +59,10 @@ export default {
 <style scoped>
   .task-wrapper{
     border: solid black 1px;
+  }
+
+  .done {
+    text-decoration: line-through;
+    color: gray;
   }
 </style>
