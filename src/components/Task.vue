@@ -6,17 +6,27 @@
     <div>
       Status: {{ initialData.status }}
     </div>
-    <button type="button" @click="toggleEdit">{{isEditing ? 'Stop editing': 'Edit' }}</button>
-    <div v-if="isEditing">
-      <input v-model="mutableData.label"/>
-    </div>
-
+   
+    <button type="button" @click="isEditing = !isEditing;">{{isEditing ? 'Cancel': 'Edit' }}</button>
+    <TaskForm 
+      v-if="isEditing === true"
+      :isEdit="true"
+      :initialData="initialData"
+      @sendData="confirmChange">
+    </TaskForm>
+    <button type="button" @click="() => $emit('requireDelete',taskIndex)">X</button>
   </div>
+
 </template>
 
 <script>
+import TaskForm from './TaskForm.vue'
+
 export default {
   name: 'Task',
+  components: {
+    TaskForm
+  },
   props:{
     taskIndex: Number,
     initialData: Object
@@ -35,13 +45,12 @@ export default {
   },
   emits:[
     'taskChanged',
+    'requireDelete'
   ],
   methods: {
-    toggleEdit(){
-      this.isEditing = !this.isEditing;
-      if(!this.isEditing){
-        this.$emit('taskChanged', this.taskIndex, this.mutableData)
-      }
+    confirmChange(data){
+      this.isEditing = false;
+      this.$emit('taskChanged', this.taskIndex, {...data})
     }
   }
 }

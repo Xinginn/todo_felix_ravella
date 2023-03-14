@@ -1,70 +1,53 @@
 
 <template>
   <h1>My TODO List</h1>
-
   New task:
-  <form @submit.prevent="addTask">
-    <input type="text" v-model="newTaskData.label" placeholder="task name">
-    <select v-model="newTaskData.status">
-      <option v-for="item, index of statusOptions" :hidden="item == statusOptions[statusOptions.length-1]"
-        :key="index"
-        :value="item">
-        {{item}}
-      </option>
-    </select>
-    <button type="submit">+</button>
-  </form>
+  <TaskForm 
+    :isEdit="false"
+    @sendData="(data) => tasks.push({...data})">
+  </TaskForm>
 
-  <Task v-for="item,index of taskList" 
+  <Task v-for="item,index of tasks" 
     :key="index" 
     :taskIndex="index"
     :initialData="item"
-    @taskChanged="onTaskChanged">
+    @taskChanged="(index, data) => tasks[index] = data"
+    @requireDelete="(index) => tasks.splice(index,1)">
   </Task>
+
+  <button type="button" @click="removeAllDone">Clear all finished tasks</button>
 </template>
 
 <script>
 import Task from './components/Task.vue'
+import TaskForm from './components/TaskForm.vue'
 
 export default {
   name: 'App',
   components: {
-    Task
+    Task,
+    TaskForm
   },
   data(){
     return {
-      taskList: [
+      tasks: [
         {
           label: 'première task',
           status: 'todo'
         },
         {
           label: 'deuxieme task',
-          status: 'done'
+          status: 'done!'
         }
-      ],
-      newTaskData: {
-        label: "",
-        status: "todo"
-      },
-      statusOptions: [
-        "todo",
-        "doing...",
-        "done!"
       ],
     }
   },
   methods:{
-    onTaskChanged(index, data){
-      this.taskList[index] = data
-    },
-    addTask(){
-      this.taskList.push({...this.newTaskData})
-      // flush new task values
-      this.newTaskData = {
-        label: "",
-        status: "todo"
-      }
+    removeAllDone(){
+      this.tasks = this.tasks.filter((item) => {
+        console.log(item.status !== 'done!')
+        return item.status !== 'done!'
+      })
     }
   }
 }
