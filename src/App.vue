@@ -44,14 +44,14 @@ export default {
         {
           id: 0,
           data: {
-            label: 'première task',
+            label: 'First task',
             status: 'todo'
           }
         },
         {
           id: 1,
           data: {
-            label: 'deuxieme task',
+            label: 'Second task',
             status: 'done!'
           }
         }
