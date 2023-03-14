@@ -1,13 +1,24 @@
 
 <template>
   <h1>My TODO List</h1>
+  Filter tasks:
+  {{ selectedFilter }}
+  <select v-model="selectedFilter">
+    <option v-for="item,index of filterOptions" 
+      :key="index" 
+      :value="item"
+    >
+    {{item}}
+    </option>
+  </select>
+  <hr>
   New task:
   <TaskForm 
     :isEdit="false"
     @sendData="(data) => tasks.push({...data})">
   </TaskForm>
 
-  <Task v-for="item,index of tasks" 
+  <Task v-for="item,index of getFilteredTasks" 
     :key="index" 
     :taskIndex="index"
     :initialData="item"
@@ -40,6 +51,21 @@ export default {
           status: 'done!'
         }
       ],
+      selectedFilter:'all',
+      filterOptions: [
+        "all",
+        "todo",
+        "doing...",
+        "done!"
+      ]
+    }
+  },
+  computed:{
+    getFilteredTasks(){
+      const filtered = this.tasks.filter((item) => {
+        return (this.selectedFilter === 'all' || item.status === this.selectedFilter)
+      })
+      return filtered
     }
   },
   methods:{
@@ -48,7 +74,7 @@ export default {
         console.log(item.status !== 'done!')
         return item.status !== 'done!'
       })
-    }
+    },
   }
 }
 </script>
