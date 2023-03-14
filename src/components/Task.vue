@@ -1,7 +1,7 @@
 <template>
   <div class="task-wrapper">
     <div :class="initialData.status === 'done!' ? 'done' : ''">
-      #{{ taskIndex +1 }} | {{ initialData.label }}
+      #{{ taskId+1 }} | {{ initialData.label }}
     </div>
     <div :class="initialData.status === 'done!' ? 'done' : ''">
       Status: {{ initialData.status }}
@@ -14,7 +14,7 @@
       :initialData="initialData"
       @sendData="confirmChange">
     </TaskForm>
-    <button type="button" @click="() => $emit('requireDelete',taskIndex)">X</button>
+    <button type="button" @click="() => $emit('requireDelete',taskId)">X</button>
   </div>
 
 </template>
@@ -28,7 +28,7 @@ export default {
     TaskForm
   },
   props:{
-    taskIndex: Number,
+    taskId: Number,
     initialData: Object
   },
   mounted(){
@@ -50,7 +50,7 @@ export default {
   methods: {
     confirmChange(data){
       this.isEditing = false;
-      this.$emit('taskChanged', this.taskIndex, {...data})
+      this.$emit('taskChanged', this.taskId, {...data})
     }
   }
 }

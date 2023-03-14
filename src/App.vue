@@ -2,7 +2,6 @@
 <template>
   <h1>My TODO List</h1>
   Filter tasks:
-  {{ selectedFilter }}
   <select v-model="selectedFilter">
     <option v-for="item,index of filterOptions" 
       :key="index" 
@@ -15,15 +14,15 @@
   New task:
   <TaskForm 
     :isEdit="false"
-    @sendData="(data) => tasks.push({...data})">
+    @sendData="addTask">
   </TaskForm>
 
   <Task v-for="item,index of getFilteredTasks" 
     :key="index" 
-    :taskIndex="index"
-    :initialData="item"
-    @taskChanged="(index, data) => tasks[index] = data"
-    @requireDelete="(index) => tasks.splice(index,1)">
+    :taskId="item.id"
+    :initialData="item.data"
+    @taskChanged="onTaskChanged"
+    @requireDelete="onRequireDelete">
   </Task>
 
   <button type="button" @click="removeAllDone">Clear all finished tasks</button>
@@ -43,12 +42,18 @@ export default {
     return {
       tasks: [
         {
-          label: 'première task',
-          status: 'todo'
+          id: 0,
+          data: {
+            label: 'première task',
+            status: 'todo'
+          }
         },
         {
-          label: 'deuxieme task',
-          status: 'done!'
+          id: 1,
+          data: {
+            label: 'deuxieme task',
+            status: 'done!'
+          }
         }
       ],
       selectedFilter:'all',
@@ -57,13 +62,14 @@ export default {
         "todo",
         "doing...",
         "done!"
-      ]
+      ],
+      lastId: 1
     }
   },
   computed:{
     getFilteredTasks(){
       const filtered = this.tasks.filter((item) => {
-        return (this.selectedFilter === 'all' || item.status === this.selectedFilter)
+        return (this.selectedFilter === 'all' || item.data.status === this.selectedFilter)
       })
       return filtered
     }
@@ -71,10 +77,34 @@ export default {
   methods:{
     removeAllDone(){
       this.tasks = this.tasks.filter((item) => {
-        console.log(item.status !== 'done!')
-        return item.status !== 'done!'
+        return item.data.status !== 'done!'
       })
     },
+    addTask(formData){
+      this.lastId += 1;
+      this.tasks.push(
+        {
+          id: this.lastId,
+          data: {...formData}
+         }
+      )
+    },
+    onTaskChanged(taskId, data){
+      for(let task of this.tasks){
+        if (task.id === taskId){
+          task.data = data;
+          return
+        }
+      }
+    },
+    onRequireDelete(taskId){
+      for(let index in this.tasks){
+        if (this.tasks[index].id === taskId){
+          this.tasks.splice(index,1);
+          return
+        }
+      }
+    }
   }
 }
 </script>
